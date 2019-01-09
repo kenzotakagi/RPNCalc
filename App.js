@@ -253,16 +253,31 @@ export default class App extends React.Component {
     this.setState({ current: "0", dotInputed: false, afterValueButton: false })
   };
 
+  showValue = (index) => {
+    if (this.state.afterValueButton || this.state.results.length == 0) {
+      index = index - 1
+    }
+    if (index == -1) {
+      return this.state.current
+    }
+    if (this.state.results.length > index) {
+      return this.state.results[this.state.results.length - 1 - index]
+    }
+    return ""
+  }
+
   render() {
     return (
       <View style={ styles.container }>
         <View style={ styles.results }>
-          <View style={ styles.resultLine } />
           <View style={ styles.resultLine }>
-            <Text>{ this.state.current }</Text>
+            <Text>{ this.showValue(2) }</Text>
           </View>
           <View style={ styles.resultLine }>
-            <Text>{ this.state.results.join(' ') }</Text>
+            <Text>{ this.showValue(1) }</Text>
+          </View>
+          <View style={ styles.resultLine }>
+            <Text>{ this.showValue(0) }</Text>
           </View>
         </View>
 
@@ -312,7 +327,8 @@ const styles = StyleSheet.create({
     flex: 1,
     borderBottomWidth: 1,
     justifyContent: "center",
-    alignItems: "flex-end"
+    alignItems: "flex-end",
+    paddingRight: 20,
   },
 
   buttons: {
