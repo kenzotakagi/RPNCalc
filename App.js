@@ -1,27 +1,30 @@
-import React from 'react';
+import React from "react";
 import {
   StyleSheet,
   Text,
   View,
   Platform,
   StatusBar,
-  TouchableOpacity,
-} from 'react-native';
+  TouchableOpacity
+} from "react-native";
 
-const STATUSBAR_HEAIGHT = Platform.OS == 'ios' ? 20 : StatusBar.currentHeight;
+const STATUSBAR_HEAIGHT = Platform.OS == "ios" ? 20 : StatusBar.currentHeight;
 
-const CalcButton = (props) => {
-  const flex = props.flex ? props.flex : 1
+const CalcButton = props => {
+  const flex = props.flex ? props.flex : 1;
   return (
     <TouchableOpacity
       style={ [styles.calcButton, { flex: flex }] }
-      onPress={ () => { props.btnEvent() } }>
+      onPress={ () => {
+        props.btnEvent();
+      } }
+    >
       <Text style={ styles.calcButtonText }>{ props.label }</Text>
     </TouchableOpacity>
-  )
-}
+  );
+};
 
-const CalcButtons = (props) => {
+const CalcButtons = props => {
   return (
     <React.Fragment>
       { props.buttons.map(button => {
@@ -32,126 +35,234 @@ const CalcButtons = (props) => {
             label={ button.label }
             btnEvent={ button.btnEvent }
           />
-        )
+        );
       }) }
     </React.Fragment>
-  )
-}
+  );
+};
 
 export default class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      results: [],
+      current: "0",
+      dotInputed: false,
+      afterValueButton: false
+    };
+  }
+
   buttons = [
     [
       {
-        label: 'AC',
+        label: "AC",
         flex: 2,
-        btnEvent: () => { this.acButton() },
+        btnEvent: () => {
+          this.acButton();
+        }
       },
       {
-        label: 'C',
-        btnEvent: () => { this.cButton() },
+        label: "C",
+        btnEvent: () => {
+          this.cButton();
+        }
       },
       {
-        label: '+',
-        btnEvent: () => { this.calcButton('+') },
-      },
+        label: "+",
+        btnEvent: () => {
+          this.calcButton("+");
+        }
+      }
     ],
     [
       {
-        label: '7',
-        btnEvent: () => { this.valueButton('7') },
+        label: "7",
+        btnEvent: () => {
+          this.valueButton("7");
+        }
       },
       {
-        label: '8',
-        btnEvent: () => { this.valueButton('8') },
+        label: "8",
+        btnEvent: () => {
+          this.valueButton("8");
+        }
       },
       {
-        label: '9',
-        btnEvent: () => { this.valueButton('9') },
+        label: "9",
+        btnEvent: () => {
+          this.valueButton("9");
+        }
       },
       {
-        label: '-',
-        btnEvent: () => { this.calcButton('-') },
-      },
+        label: "-",
+        btnEvent: () => {
+          this.calcButton("-");
+        }
+      }
     ],
     [
       {
-        label: '4',
-        btnEvent: () => { this.valueButton('4') },
+        label: "4",
+        btnEvent: () => {
+          this.valueButton("4");
+        }
       },
       {
-        label: '5',
-        btnEvent: () => { this.valueButton('5') },
+        label: "5",
+        btnEvent: () => {
+          this.valueButton("5");
+        }
       },
       {
-        label: '6',
-        btnEvent: () => { this.valueButton('6') },
+        label: "6",
+        btnEvent: () => {
+          this.valueButton("6");
+        }
       },
       {
-        label: '*',
-        btnEvent: () => { this.calcButton('*') },
-      },
+        label: "*",
+        btnEvent: () => {
+          this.calcButton("*");
+        }
+      }
     ],
     [
       {
-        label: '1',
-        btnEvent: () => { this.valueButton('1') },
+        label: "1",
+        btnEvent: () => {
+          this.valueButton("1");
+        }
       },
       {
-        label: '2',
-        btnEvent: () => { this.valueButton('2') },
+        label: "2",
+        btnEvent: () => {
+          this.valueButton("2");
+        }
       },
       {
-        label: '3',
-        btnEvent: () => { this.valueButton('3') },
-      },
+        label: "3",
+        btnEvent: () => {
+          this.valueButton("3");
+        }
+      }
     ],
     [
       {
-        label: '0',
-        btnEvent: () => { this.valueButton('0') },
+        label: "0",
+        btnEvent: () => {
+          this.valueButton("0");
+        }
       },
       {
-        label: '.',
-        btnEvent: () => { this.valueButton('.') },
+        label: ".",
+        btnEvent: () => {
+          this.valueButton(".");
+        }
       },
       {
-        label: '/',
-        btnEvent: () => { this.calcButton('/') },
-      },
+        label: "/",
+        btnEvent: () => {
+          this.calcButton("/");
+        }
+      }
     ],
     [
       {
-        label: 'Enter',
-        btnEvent: () => { this.enterButton() },
-      },
+        label: "Enter",
+        btnEvent: () => {
+          this.enterButton();
+        }
+      }
     ]
-  ]
+  ];
 
-  valueButton = (value) => {
-  }
+  valueButton = value => {
+    let currentString = this.state.current
+    const dotInputed = this.state.dotInputed
+    let newDotInputed = dotInputed
+    if (value == ".") {
+      if (!dotInputed) {
+        currentString = currentString + value
+        newDotInputed = true
+      }
+    } else if (currentString == '0') {
+      currentString = value
+    } else {
+      currentString = currentString + value
+    }
+    this.setState({ current: currentString, dotInputed: newDotInputed, afterValueButton: true })
+  };
 
   enterButton = () => {
-  }
+    let newValue = NaN
+    if (this.state.dotInputed) {
+      newValue = parseFloat(this.state.current)
+    } else {
+      newValue = parseInt(this.state.current)
+    }
+    if (isNaN(newValue)) {
+      return
+    }
+    let results = this.state.results
+    results.push(newValue)
+    this.setState({ current: '0', dotInputed: false, results: results, afterValueButton: false })
+  };
 
-  calcButton = (value) => {
-  }
+  calcButton = value => {
+    if (this.state.results.length < 2) {
+      return
+    }
+    if (this.state.afterValueButton == true) {
+      return
+    }
+    let newResults = this.state.results
+    const target2 = newResults.pop()
+    const target1 = newResults.pop()
+    newValue = null
+    switch (value) {
+      case '+':
+        newValue = target1 + target2
+        break
+      case '-':
+        newValue = target1 - target2
+        break
+      case '*':
+        newValue = target1 * target2
+        break
+      case '/':
+        newValue = target1 / target2
+        if (!isFinite(newValue)) {
+          newValue = null
+        }
+        break
+      default:
+        break
+    }
+    if (newValue == null) {
+      return
+    }
+    newResults.push(newValue)
+    this.setState({ current: "0", dotInputed: false, results: newResults, afterValueButton: false })
+  };
 
   acButton = () => {
-  }
+    this.setState({ current: '0', dotInputed: false, results: [], afterValueButton: false })
+  };
 
   cButton = () => {
-  }
+    this.setState({ current: "0", dotInputed: false, afterValueButton: false })
+  };
 
   render() {
     return (
       <View style={ styles.container }>
-
         <View style={ styles.results }>
+          <View style={ styles.resultLine } />
           <View style={ styles.resultLine }>
+            <Text>{ this.state.current }</Text>
           </View>
           <View style={ styles.resultLine }>
-          </View>
-          <View style={ styles.resultLine }>
+            <Text>{ this.state.results.join(' ') }</Text>
           </View>
         </View>
 
@@ -189,55 +300,55 @@ export default class App extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: STATUSBAR_HEAIGHT,
+    backgroundColor: "#fff",
+    paddingTop: STATUSBAR_HEAIGHT
   },
 
   results: {
     flex: 3,
-    backgroundColor: '#fff'
+    backgroundColor: "#fff"
   },
   resultLine: {
     flex: 1,
     borderBottomWidth: 1,
-    justifyContent: 'center',
-    alignItems: 'flex-end',
+    justifyContent: "center",
+    alignItems: "flex-end"
   },
 
   buttons: {
-    flex: 5,
+    flex: 5
   },
   buttonLine: {
     flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    borderWidth: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    backgroundColor: "#fff",
+    alignItems: "center",
+    borderWidth: 1
   },
 
   lastButtonLinesContainer: {
     flex: 2,
-    flexDirection: 'row',
+    flexDirection: "row"
   },
   twoButtonLines: {
-    flex: 3,
+    flex: 3
   },
   enterButtonContainer: {
     flex: 1,
-    alignItems: 'center',
-    borderWidth: 1,
+    alignItems: "center",
+    borderWidth: 1
   },
   calcButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    height: '100%',
-    flexDirection: 'column',
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    height: "100%",
+    flexDirection: "column",
     borderWidth: 1,
-    borderColor: "#b0c4de",
+    borderColor: "#b0c4de"
   },
   calcButtonText: {
-    fontSize: 20,
-  },
+    fontSize: 20
+  }
 });
