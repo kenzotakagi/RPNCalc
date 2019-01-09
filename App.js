@@ -294,15 +294,13 @@ export default class App extends React.Component {
     return (
       <View style={ styles.container }>
         <View style={ [styles.results, { flex: resultFlex }] }>
-          <View style={ styles.resultLine }>
-            <Text>{ this.showValue(2) }</Text>
-          </View>
-          <View style={ styles.resultLine }>
-            <Text>{ this.showValue(1) }</Text>
-          </View>
-          <View style={ styles.resultLine }>
-            <Text>{ this.showValue(0) }</Text>
-          </View>
+          { [...Array(resultFlex).keys()].reverse().map(index => {
+            return (
+              <View style={ styles.resultLine } key={ "result_" + index }>
+                <Text>{ this.showValue(index) }</Text>
+              </View>
+            )
+          }) }
         </View>
 
         <View style={ styles.buttons }>
